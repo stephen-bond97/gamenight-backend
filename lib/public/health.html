@@ -15,8 +15,6 @@
         const socket = io("http://localhost:3000");
 
         function sendMsg() {
-            console.log("hello");
-
             socket.emit("message", "HELLO WORLD");
         }
     </script>
