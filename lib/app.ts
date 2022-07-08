@@ -1,4 +1,5 @@
 import bodyParser from "body-parser";
+import { SocketController } from "./controllers/socketController";
 import express from "express";
 import http from "http";
 import { RouteProvider } from "./routeProvider";
@@ -7,6 +8,7 @@ class App {
     public app: express.Application;
     public server: http.Server;
     public routeProvider = new RouteProvider();
+    public socketController: SocketController;
 
     private readonly PORT = process.env.PORT || 3000;
 
@@ -16,6 +18,7 @@ class App {
     public constructor() {
         this.configureApp();
         this.configureServer();
+        this.configureSockets();
         this.routeProvider.mapRoutes(this.app);
     }
 
@@ -37,6 +40,10 @@ class App {
         this.server.listen(this.PORT, () => {
             console.log("Server is running on port %s", this.PORT);
         });
+    }
+
+    private configureSockets(): void {
+        this.socketController = new SocketController(this.server);
     }
 }
 

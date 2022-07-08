@@ -14,6 +14,7 @@ export class SocketController {
     }
 
     private handleSocketConnection(socket: SocketIO.Socket) : void {
+        socket.on("message", () => socket.broadcast.emit("message", "received"));
         socket.on("disconnect", () => this.handleSocketDisconnect(socket));
     }
 
