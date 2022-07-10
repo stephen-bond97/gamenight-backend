@@ -9,9 +9,10 @@ export class SocketController {
      * @param server an existing active http server
      */
     public constructor(httpServer: http.Server) {
+        console.log(`${process.env.BASE_URL}:${process.env.PORT}`);
         this.socketServer = new SocketIO.Server(httpServer, {
             cors: {
-                origin: process.env.BASE_URL,
+                origin: `${process.env.BASE_URL}:${process.env.PORT}`,
                 methods: ["GET", "POST"]
             }
         });
