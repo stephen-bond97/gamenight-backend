@@ -2,15 +2,20 @@ import * as SocketIO from "socket.io";
 import * as http from "http";
 
 export class SocketController {
-    private io: SocketIO.Server;
+    private socketServer: SocketIO.Server;
     
     /**
      * creates a new instance of the socket controller class
      * @param server an existing active http server
      */
-    public constructor(server: http.Server) {
-        this.io = new SocketIO.Server(server);
-        this.io.on("connect", socket => this.handleSocketConnection(socket));
+    public constructor(httpServer: http.Server) {
+        this.socketServer = new SocketIO.Server(httpServer, {
+            cors: {
+                origin: process.env.BASE_URL,
+                methods: ["GET", "POST"]
+            }
+        });
+        this.socketServer.on("connect", socket => this.handleSocketConnection(socket));
     }
 
     private handleSocketConnection(socket: SocketIO.Socket) : void {

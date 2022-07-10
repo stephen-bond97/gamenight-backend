@@ -3,6 +3,7 @@ import { SocketController } from "./controllers/socketController";
 import express from "express";
 import http from "http";
 import { RouteProvider } from "./routeProvider";
+import "dotenv/config";
 
 class App {
     public app: express.Application;
