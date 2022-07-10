@@ -12,7 +12,7 @@ export class SocketController {
         console.log(`${process.env.BASE_URL}:${process.env.PORT}`);
         this.socketServer = new SocketIO.Server(httpServer, {
             cors: {
-                origin: `${process.env.BASE_URL}:${process.env.PORT}`,
+                origin: process.env.BASE_URL,
                 methods: ["GET", "POST"]
             }
         });
