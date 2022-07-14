@@ -1,6 +1,21 @@
 import * as SocketIO from "socket.io";
 import * as http from "http";
 
+enum Request {
+    CreateLobby = 'create-lobby',
+    JoinLobby = 'join-lobby',
+    ShareInformation = 'share-information',
+    SynchroniseLobby = 'synchronise-lobby'
+}
+
+enum Response {
+    LobbyCreated = 'lobby-created',
+    LobbyClosed = 'lobby-closed',
+    LobbyJoined = 'lobby-joined',
+    InformationShared = 'information-shared',
+    LobbySynchronised = 'lobby-synchronised'
+}
+
 export class SocketController {
     private socketServer: SocketIO.Server;
     
@@ -9,7 +24,6 @@ export class SocketController {
      * @param server an existing active http server
      */
     public constructor(httpServer: http.Server) {
-        console.log(`${process.env.BASE_URL}:${process.env.PORT}`);
         this.socketServer = new SocketIO.Server(httpServer, {
             cors: {
                 origin: process.env.BASE_URL,
@@ -20,7 +34,6 @@ export class SocketController {
     }
 
     private handleSocketConnection(socket: SocketIO.Socket) : void {
-        socket.on("message", () => socket.broadcast.emit("message", "received"));
         socket.on("disconnect", () => this.handleSocketDisconnect(socket));
     }
 
