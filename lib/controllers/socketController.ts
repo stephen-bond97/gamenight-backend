@@ -1,6 +1,7 @@
 import * as SocketIO from "socket.io";
 import * as http from "http";
 import { request, response } from "express";
+import { Logger } from "logger";
 
 enum Request {
     CreateLobby = 'create-lobby',
@@ -19,6 +20,7 @@ enum Response {
 
 export class SocketController {
     private socketServer: SocketIO.Server;
+    private lobbies: string[] = [];
 
     /**
      * creates a new instance of the socket controller class
@@ -47,6 +49,8 @@ export class SocketController {
     private handleCreateLobbyRequest(socket: SocketIO.Socket) : void {
         let lobbyCode = this.generateLobbyCode();
 
+        this.lobbies.push(lobbyCode);
+
         this.handleJoinLobbyRequest(socket, lobbyCode);
         socket.emit(Response.LobbyCreated, lobbyCode);
 
@@ -54,8 +58,13 @@ export class SocketController {
     }
 
     private handleJoinLobbyRequest(socket: SocketIO.Socket, lobbyCode: string) : void {
-        socket.join(lobbyCode);
+        if (!this.lobbies.includes(lobbyCode)) {
+            Logger.Warning(`Lobby not found: ${lobbyCode}`);
+            return;
+        } 
 
+        socket.join(lobbyCode);
+        
         socket.emit(Response.LobbyJoined);
     }
 
@@ -86,9 +95,11 @@ export class SocketController {
 
     private closeLobby(lobbyCode: string) : void {
         this.socketServer.in(lobbyCode).socketsLeave(lobbyCode);
+        let index = this.lobbies.indexOf(lobbyCode);
+        this.lobbies.splice(index, 1);
     }
 
     private generateLobbyCode() : string {
-        return Math.random().toString(36).substring(2, 5);
+        return Math.random().toString(36).substring(2, 7);
     }
 }
