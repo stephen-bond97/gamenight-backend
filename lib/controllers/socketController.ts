@@ -1,7 +1,6 @@
 import * as SocketIO from "socket.io";
 import * as http from "http";
-import { request, response } from "express";
-import { Logger } from "logger";
+import { Logger } from "../logger";
 
 enum Request {
     CreateLobby = 'create-lobby',
@@ -43,14 +42,13 @@ export class SocketController {
         socket.on(Request.JoinLobby, (lobbyCode: string) => this.handleJoinLobbyRequest(socket, lobbyCode));
         socket.on(Request.ShareInformation, (data: string) => this.handleShareInformationRequest(socket, data));
         socket.on(Request.SynchroniseLobby, (data: string) => this.handleLobbySynchroniseRequest(socket, data));
-        socket.on("disconnect", () => this.handleSocketDisconnect(socket));
+        //socket.on("disconnect", () => this.handleSocketDisconnect(socket));
     }
 
     private handleCreateLobbyRequest(socket: SocketIO.Socket) : void {
         let lobbyCode = this.generateLobbyCode();
 
         this.lobbies.push(lobbyCode);
-
         this.handleJoinLobbyRequest(socket, lobbyCode);
         socket.emit(Response.LobbyCreated, lobbyCode);
 
@@ -74,6 +72,7 @@ export class SocketController {
      * @param data The serialised JSON data
      */
     private handleShareInformationRequest(socket: SocketIO.Socket, data: string) : void {
+        console.log(data);
         socket.broadcast.emit(Response.InformationShared, data);
     }
 
