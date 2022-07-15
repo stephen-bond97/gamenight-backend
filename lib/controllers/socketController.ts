@@ -39,6 +39,8 @@ export class SocketController {
     private handleSocketConnection(socket: SocketIO.Socket) : void {
         socket.on(Request.CreateLobby, () => this.handleCreateLobbyRequest(socket));
         socket.on(Request.JoinLobby, (lobbyCode: string) => this.handleJoinLobbyRequest(socket, lobbyCode));
+        socket.on(Request.ShareInformation, (data: string) => this.handleShareInformationRequest(socket, data));
+        socket.on(Request.SynchroniseLobby, (data: string) => this.handleLobbySynchroniseRequest(socket, data));
         socket.on("disconnect", () => this.handleSocketDisconnect(socket));
     }
 
@@ -47,7 +49,8 @@ export class SocketController {
 
         this.handleJoinLobbyRequest(socket, lobbyCode);
         socket.emit(Response.LobbyCreated, lobbyCode);
-        // todo figure out what to do if the host disconnects
+
+        socket.on("disconnect", () => this.closeLobby(lobbyCode));
     }
 
     private handleJoinLobbyRequest(socket: SocketIO.Socket, lobbyCode: string) : void {
@@ -56,12 +59,34 @@ export class SocketController {
         socket.emit(Response.LobbyJoined);
     }
 
+    /**
+     * Connected peers will share information and the host will be listening for this response
+     * @param socket The socket connection raising this event
+     * @param data The serialised JSON data
+     */
+    private handleShareInformationRequest(socket: SocketIO.Socket, data: string) : void {
+        socket.broadcast.emit(Response.InformationShared, data);
+    }
+
+    /**
+     * Host will broadcast the synchronisation event and peers will be listening for the response
+     * @param socket The socket connection raising this event
+     * @param data The serialised JSON data
+     */
+    private handleLobbySynchroniseRequest(socket: SocketIO.Socket, data: string) : void {
+        socket.broadcast.emit(Response.LobbySynchronised, data);
+    }
+
     private handleSocketDisconnect(socket: SocketIO.Socket) : void {
-        //todo check if all participants have left and close lobby
+        // todo alert the host that a player has left
         console.log("Client Disconnect");
     }
 
     //#endregion
+
+    private closeLobby(lobbyCode: string) : void {
+        this.socketServer.in(lobbyCode).socketsLeave(lobbyCode);
+    }
 
     private generateLobbyCode() : string {
         return Math.random().toString(36).substring(2, 5);
