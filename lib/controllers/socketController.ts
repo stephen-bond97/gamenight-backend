@@ -1,6 +1,7 @@
 import * as SocketIO from "socket.io";
 import * as http from "http";
-import { Logger } from "../logger";
+import { ILogger } from "logging/ilogger";
+import { LoggerFactory } from "logging/logger.factory";
 
 enum Request {
     CreateLobby = 'create-lobby',
@@ -20,12 +21,14 @@ enum Response {
 export class SocketController {
     private socketServer: SocketIO.Server;
     private lobbies: string[] = [];
+    private logger: ILogger;
 
     /**
      * creates a new instance of the socket controller class
      * @param server an existing active http server
      */
     public constructor(httpServer: http.Server) {
+        this.logger = LoggerFactory.CreateLogger();
         this.socketServer = new SocketIO.Server(httpServer, {
             cors: {
                 origin: process.env.BASE_URL,
@@ -64,7 +67,7 @@ export class SocketController {
 
     private handleJoinLobbyRequest(socket: SocketIO.Socket, lobbyCode: string): void {
         if (!this.lobbies.includes(lobbyCode)) {
-            Logger.Warning(`Lobby not found: ${lobbyCode}`);
+            this.logger.Warning(`Lobby not found: ${lobbyCode}`);
             return;
         }
 
