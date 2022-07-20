@@ -1,7 +1,7 @@
 import * as SocketIO from "socket.io";
 import * as http from "http";
-import { ILogger } from "logging/ilogger";
-import { LoggerFactory } from "logging/logger.factory";
+import { ILogger } from "../logging/ilogger";
+import { LoggerFactory } from "../logging/logger.factory";
 
 enum Request {
     CreateLobby = 'create-lobby',
@@ -15,7 +15,8 @@ enum Response {
     LobbyClosed = 'lobby-closed',
     LobbyJoined = 'lobby-joined',
     InformationShared = 'information-shared',
-    LobbySynchronised = 'lobby-synchronised'
+    LobbySynchronised = 'lobby-synchronised',
+    Exception = 'exception'
 }
 
 export class SocketController {
@@ -49,6 +50,12 @@ export class SocketController {
     }
 
     private handleCreateLobbyRequest(socket: SocketIO.Socket): void {
+        if (this.lobbies.length >= parseInt(process.env.MAX_LOBBY_COUNT || "10")) {
+            this.logger.Warning("The max lobby count has been exceeded.");
+            socket.emit(Response.Exception, "The max lobby count has been exceeded.");
+            return;
+        }
+
         let lobbyCode = this.generateLobbyCode();
 
         // check if socket is already is part of any active lobbies and interate through to remove lobby
