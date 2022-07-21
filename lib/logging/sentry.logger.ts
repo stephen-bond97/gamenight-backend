@@ -6,7 +6,6 @@ export class SentryLogger implements ILogger {
      *
      */
     public constructor() {
-        console.log("creating sentry logger");
         Sentry.init({
             dsn: process.env.SENTRY_DSN
           });

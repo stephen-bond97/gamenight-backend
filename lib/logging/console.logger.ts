@@ -1,13 +1,6 @@
 import { ILogger } from "./ilogger";
 
 export class ConsoleLogger implements ILogger {
-    /**
-     *
-     */
-    constructor() {
-        console.log("creating a console logger");        
-    }
-
     public Error(message: string): void {
         console.error(message);
     }
