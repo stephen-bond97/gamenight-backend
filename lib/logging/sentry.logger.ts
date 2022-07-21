@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/node';
-import * as Tracing from '@sentry/tracing';
 import { ILogger } from './ilogger';
 
 export class SentryLogger implements ILogger {
@@ -7,9 +6,11 @@ export class SentryLogger implements ILogger {
      *
      */
     public constructor() {
+        console.log("creating sentry logger");
         Sentry.init({
             dsn: process.env.SENTRY_DSN
           });
+        console.log("sentry dsn = " + process.env.SENTRY_DSN);
     }
     public Error(message: string): void {
         Sentry.captureMessage(message, "error");
