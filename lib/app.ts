@@ -1,6 +1,7 @@
 import bodyParser from "body-parser";
 import { SocketController } from "./controllers/socketController";
 import express from "express";
+import cors from "cors";
 import http from "http";
 import { RouteProvider } from "./routeProvider";
 import "dotenv/config";
@@ -25,6 +26,10 @@ class App {
 
     private configureApp() : void {
         this.app = express();
+
+        this.app.use(cors({
+            origin: process.env.BASE_URL
+          }));
         
         // opening up public directory for HTTP get requests
         this.app.use(express.static("lib/public"));
