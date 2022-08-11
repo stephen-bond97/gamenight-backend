@@ -1,9 +1,20 @@
 import axios from "axios";
 import { Request, Response } from "express";
+import { ILogger } from "logging/ilogger";
+import { LoggerFactory } from "logging/logger.factory";
 import { Constants } from "../models/constants";
 import { OpenTrivia } from "../models/opentrivia";
 
 export class TriviaController {
+    private logger: ILogger;
+    
+    /**
+     *
+     */
+    public constructor() {
+        this.logger = LoggerFactory.CreateLogger();
+    }
+
 
     /**
      * 
@@ -11,11 +22,13 @@ export class TriviaController {
      * @param response 
      */
     public async GetQuestion(request: Request, response: Response): Promise<void> {
-        let category = OpenTrivia.Category[request.params.category as any];
+        let category = OpenTrivia.Category[request.query.category as any];
 
         if (!category) {
             // todo if category not found, create log
+            this.logger.Info(`Category not found: ${request.query.category}`);
             response.sendStatus(400);
+            return;
         }
 
         let { data, status } = await axios.get<OpenTrivia.Response>(
@@ -23,15 +36,18 @@ export class TriviaController {
             params: {
                 amount: 1,
                 category: category
-            }
+            },
         });
 
         if (data && data.results?.length == 1) {
             response.status(status).send(data.results.pop());
+            return;
         }
         else {
             // todo implement analytics for logging
+            this.logger.Error(`Open Trivia DB response status: ${status}`)
             response.sendStatus(500);
+            return;
         }
     }
 }

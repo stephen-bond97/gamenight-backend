@@ -6,7 +6,7 @@ export class RouteProvider {
 
     public mapRoutes(app: Application) : void {
         app.route("/health").get((req, res) => this.handleBaseRequest(req, res));
-        app.route("/trivia/question/:category").get((req, res) => this.trivia.GetQuestion(req, res));
+        app.route("/trivia/question").get((req, res) => this.trivia.GetQuestion(req, res));
     }
 
     private handleBaseRequest(request: Request, response: Response) : void {
