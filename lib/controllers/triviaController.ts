@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Request, Response } from "express";
-import { ILogger } from "logging/ilogger";
-import { LoggerFactory } from "logging/logger.factory";
+import { ILogger } from "../logging/ilogger";
+import { LoggerFactory } from "../logging/logger.factory";
 import { Constants } from "../models/constants";
 import { OpenTrivia } from "../models/opentrivia";
 
@@ -25,7 +25,6 @@ export class TriviaController {
         let category = OpenTrivia.Category[request.query.category as any];
 
         if (!category) {
-            // todo if category not found, create log
             this.logger.Info(`Category not found: ${request.query.category}`);
             response.sendStatus(400);
             return;
@@ -44,7 +43,6 @@ export class TriviaController {
             return;
         }
         else {
-            // todo implement analytics for logging
             this.logger.Error(`Open Trivia DB response status: ${status}`)
             response.sendStatus(500);
             return;
