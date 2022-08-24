@@ -37,6 +37,7 @@ export class SocketController {
             }
         });
         this.socketServer.on("connect", socket => this.handleSocketConnection(socket));
+        this.logger.Info("Socket Server listening on port 3000");
     }
 
     //#region socket handlers
@@ -51,12 +52,13 @@ export class SocketController {
 
     private handleCreateLobbyRequest(socket: SocketIO.Socket): void {
         if (this.lobbies.length >= parseInt(process.env.MAX_LOBBY_COUNT || "10")) {
-            this.logger.Warning("The max lobby count has been exceeded.");
+            this.logger.Warning("The max lobby count has been exceeded");
             socket.emit(Response.Exception, "The max lobby count has been exceeded.");
             return;
         }
 
         let lobbyCode = this.generateLobbyCode();
+        this.logger.Debug(`${lobbyCode}: lobby code has been generated`);
 
         // check if socket is already is part of any active lobbies and interate through to remove lobby
         if (socket.rooms.size > 1) {
@@ -103,7 +105,7 @@ export class SocketController {
 
     private handleSocketDisconnect(socket: SocketIO.Socket): void {
         // todo alert the host that a player has left
-        console.log("Client Disconnect");
+        this.logger.Debug("Socket disconnected");
     }
 
     //#endregion
@@ -117,6 +119,8 @@ export class SocketController {
         this.lobbies.splice(index, 1);
         this.socketServer.in(lobbyCode).emit(Response.LobbyClosed);
         this.socketServer.in(lobbyCode).socketsLeave(lobbyCode);
+
+        this.logger.Info(`${lobbyCode}: lobby has been closed`);
     }
 
     private generateLobbyCode(): string {

@@ -39,11 +39,12 @@ export class TriviaController {
         });
 
         if (data && data.results?.length == 1) {
+            this.logger.Debug("Trivia question found");
             response.status(status).send(data.results.pop());
             return;
         }
         else {
-            this.logger.Error(`Open Trivia DB response status: ${status}`)
+            this.logger.Error(`Open Trivia DB response status: ${status}`);
             response.sendStatus(500);
             return;
         }

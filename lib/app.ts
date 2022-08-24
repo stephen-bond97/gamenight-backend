@@ -5,6 +5,8 @@ import cors from "cors";
 import http from "http";
 import { RouteProvider } from "./routeProvider";
 import "dotenv/config";
+import { ILogger } from "./logging/ilogger";
+import { LoggerFactory } from "./logging/logger.factory";
 
 class App {
     public app: express.Application;
@@ -13,6 +15,7 @@ class App {
     public socketController: SocketController;
 
     private readonly PORT = process.env.PORT || 3000;
+    private logger: ILogger;
 
     /**
      *
@@ -22,6 +25,7 @@ class App {
         this.configureServer();
         this.configureSockets();
         this.routeProvider.mapRoutes(this.app);
+        this.logger = LoggerFactory.CreateLogger();
     }
 
     private configureApp() : void {
@@ -44,7 +48,7 @@ class App {
     private configureServer() : void {
         this.server = http.createServer(this.app);
         this.server.listen(this.PORT, () => {
-            console.log("Server is running on port %s", this.PORT);
+            this.logger.Info(`Server is running on port ${this.PORT}`);
         });
     }
 
