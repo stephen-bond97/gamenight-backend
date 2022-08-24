@@ -7,7 +7,8 @@ enum Request {
     CreateLobby = 'create-lobby',
     JoinLobby = 'join-lobby',
     ShareInformation = 'share-information',
-    SynchroniseLobby = 'synchronise-lobby'
+    SynchroniseLobby = 'synchronise-lobby',
+    CloseLobby = 'close-lobby'
 }
 
 enum Response {
@@ -47,6 +48,7 @@ export class SocketController {
         socket.on(Request.JoinLobby, (lobbyCode: string) => this.handleJoinLobbyRequest(socket, lobbyCode));
         socket.on(Request.ShareInformation, (data: string) => this.handleShareInformationRequest(socket, data));
         socket.on(Request.SynchroniseLobby, (data: string) => this.handleLobbySynchroniseRequest(socket, data));
+        socket.on(Request.CloseLobby, (lobbyCode) => this.closeLobby(lobbyCode));
         socket.on("disconnect", () => this.handleSocketDisconnect(socket));
     }
 
@@ -75,8 +77,11 @@ export class SocketController {
     }
 
     private handleJoinLobbyRequest(socket: SocketIO.Socket, lobbyCode: string): void {
+        this.logger.Info("attempting to join lobby");
+        
         if (!this.lobbies.includes(lobbyCode)) {
             this.logger.Warning(`Lobby not found: ${lobbyCode}`);
+            socket.emit(Response.Exception, `Lobby not found: ${lobbyCode}`);
             return;
         }
 
@@ -104,7 +109,6 @@ export class SocketController {
     }
 
     private handleSocketDisconnect(socket: SocketIO.Socket): void {
-        // todo alert the host that a player has left
         this.logger.Debug("Socket disconnected");
     }
 
@@ -115,6 +119,8 @@ export class SocketController {
         if (index == -1) {
             return;
         }
+
+        this.socketServer.in(lobbyCode).emit(Response.Exception, "Game has ended");
 
         this.lobbies.splice(index, 1);
         this.socketServer.in(lobbyCode).emit(Response.LobbyClosed);
