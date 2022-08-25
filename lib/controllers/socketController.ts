@@ -96,6 +96,7 @@ export class SocketController {
      * @param data The serialised JSON data
      */
     private handleShareInformationRequest(socket: SocketIO.Socket, data: string): void {
+        this.logger.Debug("sharing information");
         socket.broadcast.emit(Response.InformationShared, data);
     }
 
