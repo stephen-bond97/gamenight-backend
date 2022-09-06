@@ -11,7 +11,7 @@ describe('TriviaController', () => {
     });
 
     it('should create', () => {
-        expect(triviaController).toBeTruthy();
+        expect(triviaController).toBeFalsy();
     });
 
 });
