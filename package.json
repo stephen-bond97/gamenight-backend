@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node ./dist/server.js",
-    "dev": "npm run build && npm run start"
+    "dev": "npm run build && npm run start",
+    "test": "ts-node node_modules/jasmine/bin/jasmine"
   },
   "repository": {
     "type": "git",
@@ -34,6 +35,10 @@
     "@typescript-eslint/parser": "^5.28.0",
     "eslint": "8.17.0",
     "nodemon": "2.0.16",
-    "typescript": "4.7.3"
+    "typescript": "4.7.3",
+    "jasmine": "4.4.0",
+    "jasmine-ts": "0.4.0",
+    "@types/jasmine": "4.3.0",
+    "ts-node": "10.9.1"
   }
 }

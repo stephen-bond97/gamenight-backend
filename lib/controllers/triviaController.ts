@@ -15,7 +15,6 @@ export class TriviaController {
         this.logger = LoggerFactory.CreateLogger();
     }
 
-
     /**
      * 
      * @param request 
