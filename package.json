@@ -7,7 +7,7 @@
     "build": "tsc",
     "start": "node ./dist/server.js",
     "dev": "npm run build && npm run start",
-    "test": "ts-node node_modules/jasmine/bin/jasmine"
+    "test": "jest ts-node node_modules/jasmine/bin/jasmine"
   },
   "repository": {
     "type": "git",
@@ -39,6 +39,7 @@
     "jasmine": "4.4.0",
     "jasmine-ts": "0.4.0",
     "@types/jasmine": "4.3.0",
-    "ts-node": "10.9.1"
+    "ts-node": "10.9.1",
+    "jest": "29.0.2"
   }
 }
